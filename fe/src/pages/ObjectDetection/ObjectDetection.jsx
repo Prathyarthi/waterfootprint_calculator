@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as tf from "@tensorflow/tfjs";
 import * as cocossd from "@tensorflow-models/coco-ssd";
 import Webcam from "react-webcam";
-import "./App.css";
-import { drawRect } from "./utilities";
-import axios from "axios";
+import { drawRect } from "../../utilities";
+import axiosInstance from "../../axiosInstance";
 
 function ObjectDetection() {
     const [result, setResult] = useState("");
@@ -23,8 +22,6 @@ function ObjectDetection() {
 
     let detectionInProgress = false;
     const detect = async (net) => {
-
-
         if (detectionInProgress) {
             return;
         }
@@ -57,17 +54,19 @@ function ObjectDetection() {
             const ctx = canvasRef.current.getContext("2d");
 
             // 5. TODO - Update drawing utility
-            // drawSomething(obj, ctx)
+            // drawSomething(obj, ctx)  
 
             drawRect(obj, ctx);
 
             if (obj.length > 0) {
                 const firstObj = obj[0];
-                const response = await axios.post("http://localhost:8000/detect", {
+                console.log(firstObj);
+                const response = await axiosInstance.post("/detect", {
                     obj: firstObj.class
                 })
-
                 setResult(response.data.waterfootprint);
+                console.log(response.data);
+                console.log(response.data.waterfootprint);
 
                 detectionInProgress = false
             }
@@ -80,46 +79,42 @@ function ObjectDetection() {
     }, []);
     return (
         <>
-            <div className="flex text-center justify-center items-center m-3">
-                <h1 className="text-black font-bold text-4xl">WaterFootPrint: {result} Litres</h1>
+            <div>
+                {result}
             </div>
-            <div className="flex justify-center items-center">
-                <div className="flex justify-center items-center">
-                    <header className="">
-                        <Webcam
-                            ref={webcamRef}
-                            muted={true}
-                            style={{
-                                position: "absolute",
-                                marginLeft: "auto",
-                                marginRight: "auto",
-                                left: 0,
-                                right: 0,
-                                textAlign: "center",
-                                zindex: 9,
-                                width: 640,
-                                height: 480,
-                                borderRadius: "10px",
-                            }}
-                        />
+            <div className="App">
+                <header className="App-header">
+                    <Webcam
+                        ref={webcamRef}
+                        muted={true}
+                        style={{
+                            position: "absolute",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            left: 0,
+                            right: 0,
+                            textAlign: "center",
+                            zindex: 9,
+                            width: 640,
+                            height: 480,
+                        }}
+                    />
 
-                        <canvas
-                            ref={canvasRef}
-                            style={{
-                                position: "absolute",
-                                marginLeft: "auto",
-                                marginRight: "auto",
-                                left: 0,
-                                right: 0,
-                                textAlign: "center",
-                                zindex: 8,
-                                width: 640,
-                                height: 480,
-
-                            }}
-                        />
-                    </header>
-                </div>
+                    <canvas
+                        ref={canvasRef}
+                        style={{
+                            position: "absolute",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            left: 0,
+                            right: 0,
+                            textAlign: "center",
+                            zindex: 8,
+                            width: 640,
+                            height: 480,
+                        }}
+                    />
+                </header>
             </div>
         </>
     )

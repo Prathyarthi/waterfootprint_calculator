@@ -70,39 +70,41 @@ function ImageClassification() {
     }, []);
 
     if (isModelLoading) {
-        return <h1 className='text-center text-4xl'>Loading...</h1>;
+        return <h1 className='text-center flex justify-center items-center h-screen text-4xl'>Loading...</h1>;
     }
 
     return (
         <>
-            <div className='flex justify-center items-center text-4xl'>
-                <h1>Image Identification</h1>
-            </div>
-            <div className='flex justify-center'>
-                <input type="file" accept='image/*' capture='user' onChange={uploadImage} />
-            </div>
-            <div>  
+            <div className="h-screen flex flex-col gap-5 justify-center items-center">
+                <div className='flex justify-center items-center text-4xl'>
+                    <h1>Image Identification</h1>
+                </div>
+                <div className='flex justify-center'>
+                    <input type="file" accept='image/*' capture='user' onChange={uploadImage} />
+                </div>
                 <div>
                     <div>
-                        {imageURL && <img src={imageURL} alt="img" crossOrigin='anonymous' ref={imageRef} />}
+                        <div>
+                            {imageURL && <img src={imageURL} alt="img" crossOrigin='anonymous' ref={imageRef} />}
+                        </div>
+                        {predictions.length > 0 && <div>
+                            {predictions.map((prediction, index) => {
+                                return (
+                                    <div key={prediction.className}>
+                                        <h1 className='text-2xl'>{prediction.className}</h1>
+                                        <h3 className='text-2xl'> Confidence level: {(prediction.probability * 100).toFixed(2)}%</h3>
+                                        {index === 0 &&
+                                            <h3>Best Predicted result</h3>
+                                        }
+                                    </div>
+                                );
+                            })}
+                        </div>}
+                        {imageURL &&
+                            <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold mt-5 py-2 px-4 rounded text-3xl' onClick={identifyImage}><h2>Identify Image</h2></button>
+                        }
+                        <h1 className='text-3xl font-bold'>Waterfootprint: {result} Litres</h1>
                     </div>
-                    {predictions.length > 0 && <div>
-                        {predictions.map((prediction, index) => {
-                            return (
-                                <div key={prediction.className}>
-                                    <h1 className='text-2xl'>{prediction.className}</h1>
-                                    <h3 className='text-2xl'> Confidence level: {(prediction.probability * 100).toFixed(2)}%</h3>
-                                    {index === 0 &&
-                                        <h3>Best Predicted result</h3>
-                                    }
-                                </div>
-                            );
-                        })}
-                    </div>}
-                    {imageURL &&
-                        <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-3xl' onClick={identifyImage}><h2>Identify Image</h2></button>
-                    }
-                    <h1 className='text-3xl'>Waterfootprint: {result} Litres</h1>
                 </div>
             </div>
         </>
